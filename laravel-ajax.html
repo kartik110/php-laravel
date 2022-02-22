@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+        integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="prism.css">
+
+    <title>LARAVEL-AJAX</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">PHP</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">JQuery-PHP<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="laravel-ajax.html">Laravel Ajax</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+
+
+
+    <div class="container mt-4">
+        <div class="accordion" id="accordionExample">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
+                            data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            #1 Insert data in database using jquery in laravel.
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <!-- Some placeholder content for the first accordion panel. This panel is shown by default, thanks to the <code>.show</code> class. -->
+                        <b>App/Controllers/nameofcontoller.php</b>
+                        <pre class="line-numbers language-php" style="height: 350px;">
+<code>function categoryAdd(Request $request)
+{
+    $request->validate([
+        'name' => 'required',
+        'slug' => 'required',
+        'image' => 'required',
+    ]);
+
+
+    $slug = $request->slug;
+    $data = Category::select('slug')->where('slug',$slug)->first();
+
+    if(!empty($data))
+    {
+        return response()->json([
+            'success' => 2,
+        ]);
+    }
+    else
+    {
+        $data = new Category;
+        $data->name = $request['name'];
+        $data->slug = $request['slug'];
+
+        if($request->hasFile('image'))
+        {
+            $name = time().'.'.$request->file('image')->getClientOriginalExtension();
+            $request->file('image')->move(public_path('admin/category'),$name);
+            $data->image = $name;
+        }
+
+        $data->save();
+
+        return response()->json([
+            'success' => 1,
+        ]);
+    }
+
+}</code>
+
+                        </pre>
+
+
+                        <b>insert.blade.php</b>
+                        <pre class="language-html line-numbers" style="height: 350px;">
+<code>&ltform method="POST" id="category" enctype="multipart/form-data"&gt
+    {{ @csrf_field() }}
+    &ltdiv class="modal-body"&gt
+        &ltdiv class="form-group"&gt
+            &ltlabel for="name"&gtCategory&lt/label&gt
+            &ltinput type="text" id="cat_name" name="name" value="" class="form-control"&gt
+            &ltdiv class="name_error invalid-feedback"&gt&lt/div&gt
+        &lt/div&gt
+        &ltdiv class="form-group"&gt
+            &ltlabel for="slug"&gtSlug&lt/label&gt
+            &ltinput type="text" id="cat_slug" name="slug" value="" class="form-control"&gt
+            &ltdiv class="slug_error invalid-feedback"&gt&lt/div&gt
+        &lt/div&gt
+        &ltdiv class="form-group"&gt
+            &ltlabel for="name"&gtImage&lt/label&gt
+            &ltinput type="file" id="cat_image" name="image" value="" class="form-control"&gt
+            &ltdiv class="image_error invalid-feedback"&gt&lt/div&gt
+        &lt/div&gt
+    &lt/div&gt
+    &ltdiv class="modal-footer"&gt
+      &ltbutton type="button" class="btn btn-danger" data-dismiss="modal"&gtClose&lt/button&gt
+      &ltbutton type="button" class="btn btn-primary" onclick="saveCategory()"&gtINSERT&lt/button&gt
+    &lt/div&gt
+&lt/form&gt</code></pre>
+
+                        <b>jquery.js</b>
+                        <pre class="language-js line-numbers" style="height: 350px;">
+<code>// Insert Category
+function saveCategory()
+{
+    var form_data = new FormData(document.getElementById("category"));
+
+    $.ajax({
+            type: "POST",
+            url: "{{ url('categoryAdd') }}",
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (data) {
+            console.log(getCategories());
+                    getCategories();
+                if(data.success == 1)
+                {
+                    $('#category').trigger('reset');
+
+                    $('#categoryModal').modal('hide');
+
+                    $('.cat-list').html('');
+
+                    $('#alert').show();
+                    $('#success-message').text('Data has been Inserted..');
+
+                    setTimeout(function(){
+                        $('#alert').hide(1000);
+                    }, 3000);
+                }
+                if(data.success==2)
+                {
+                    $('.slug_error').text('Data Already Exists');
+                    $('#cat_slug').attr('class','form-control is-invalid');
+                }
+                else
+                {
+                    $('.slug_error').hide();
+                    $('#cat_slug').attr('class','form-control');
+                }
+            },
+            error: function(data){
+
+                // Name
+                if(data.responseJSON.errors.name != null)
+                {
+                    $('.name_error').text(data.responseJSON.errors.name);
+                    $('#cat_name').attr('class','form-control is-invalid');
+                }
+                else
+                {
+                    $('.name_error').hide();
+                    $('#cat_name').attr('class','form-control');
+                }
+
+                // Slug
+                if(data.responseJSON.errors.slug != null)
+                {
+                    $('.slug_error').text(data.responseJSON.errors.slug);
+                    $('#cat_slug').attr('class','form-control is-invalid');
+                }
+                else
+                {
+                    $('.slug_error').hide();
+                    $('#cat_slug').attr('class','form-control');
+                }
+
+
+                // Image
+                if(data.responseJSON.errors.image != null)
+                {
+                    $('.image_error').text(data.responseJSON.errors.image);
+                    $('#cat_image').attr('class','form-control is-invalid');
+                }
+                else
+                {
+                    $('.image_error').hide();
+                    $('#cat_image').attr('class','form-control');
+                }</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            #2 Delete data
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <b>App/Controllers/nameofcontoller.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code>//delete onclick
+function deleteCategory()
+{
+
+    $category = Category::where('id',$_POST['id'])->first();
+
+    if(file_exists('public/admin/category/'.$category->image))
+    {
+        unlink('public/admin/category/'.$category->image);
+    }
+
+    $category = Category::where('id',$_POST['id'])->delete();
+
+    return response()->json([
+        'success' => 1,
+    ]);
+
+}</code></pre>
+
+                        <b>jquery.js</b>
+                        <pre class="language-js line-numbers" style="height: 350px;">
+<code>// Delete Category
+    function deleteCat(id)
+    {
+    
+        swal({
+                title: "Are you sure You want to Delete It ?",
+                text: "Once deleted, you will not be able to recover this Record",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete)
+                {
+    
+                    $.ajax({
+                            type: "POST",
+                            url: '{{ url("/deleteCategory") }}',
+                            data: {"_token": "{{ csrf_token() }}",'id':id},
+                            dataType : 'JSON',
+                            success: function (data)
+                            {
+                                if(data.success == 1)
+                                {
+                                    swal("Your Record has been deleted!", {
+                                        icon: "success",
+                                    });
+    
+                                    $('.cat-list').html('');
+                                    getCategories();
+                                }
+                            }
+                    });
+    
+                }
+                else
+                {
+                    swal("Cancelled");
+                }
+            });
+    }
+    // End Delete Category</code></pre>
+                    </div>
+                </div>
+            </div>
+
+ 
+
+            <div class="card">
+                <div class="card-header" id="headingThree">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            #3 Fetch data
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <b>App/Controllers/nameofcontoller.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code>// Fetch Data
+function getcategory()
+{
+    $categories = Category::get()->all();
+
+    $html = '';
+    foreach($categories as $category)
+    {
+        $html .= '&lttr&gt';
+        $html .= '&lttd&gt'.$category-&gtid.'&lt/td&gt';
+        $html .= '&lttd&gt'.$category-&gtname.'&lt/td&gt';
+        $html .= '&lttd&gt'.$category-&gtslug.'&lt/td&gt';
+        // $html .='&lttd&gt'.$category-&gtimage.'&lt/td&gt';
+        $html .= '&lttd&gt&ltimg src="admin/category/'.$category-&gtimage.'" alt="Image" width="100px"&gt&lt/td&gt';
+        $html .= '&lttd&gt'.$category-&gtcreated_at.'&lt/td&gt';
+
+        $html .= '&lttd&gt';
+        $html .= '&lta href="" class="btn btn-primary rounded btn-sm"&gt&lti class="fa fa-edit"&gt&lt/i&gt&lt/a&gt';
+        $html .= '&lta href="#" onclick="deleteCat('.$category-&gtid.')" class="btn btn-danger rounded btn-sm"&gt&lti class="fa fa-trash"&gt&lt/i&gt&lt/a&gt';
+        $html .= '&lt/td&gt';
+
+        $html .= '&lt/tr&gt';
+    }
+    return response()->json([
+        'success' => 1,
+        'category' => $html,
+    ]);
+</code></pre>
+                        <b>App/Controllers/nameofcontoller.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code>// Get Categories
+getCategories();
+
+function getCategories()
+{
+    $.ajax({
+            type: "GET",
+            url: "{{ url('getcategory') }}",
+            dataType: "JSON",
+            success: function (response) {
+                if(response.success == 1)
+                {
+                    $('.cat-list').html(response.category);
+                }
+            }
+    });
+}
+
+// End Get Categories</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start card -->
+            <!-- <div class="card">
+                <div class="card-header" id="headingThree">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                #2 Show data
+                              </button>
+                    </h2>
+                </div>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                        And lastly, the placeholder content for the third and final accordion panel. This panel is hidden by default.
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- End card -->
+
+
+        </div>
+    </div>
+    <!-- prism js -->
+    <script src="prism.js"></script>
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

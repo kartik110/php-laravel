@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="prism.css">
+
+    <title>PHP-AJAX</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">PHP</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="index.html">JQuery-PHP<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="laravel-ajax.html">Laravel Ajax</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+
+
+
+    <div class="container mt-4">
+        <div class="accordion" id="accordionExample">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    #1 Insert data in database using php and jquery.
+                  </button>
+                    </h2>
+                </div>
+
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <!-- Some placeholder content for the first accordion panel. This panel is shown by default, thanks to the <code>.show</code> class. -->
+                        <b>index.php</b>
+                        <pre class="line-numbers language-html" style="height: 350px;">
+<code>
+&ltform&gt
+    &ltdiv class="mb-3"&gt
+        &ltlabel for="name" class="form-label"&gtName&lt/label&gt
+        &ltinput type="name" class="form-control" name="name" id="name" aria-describedby="emailHelp"&gt
+    &lt/div&gt
+    &ltdiv class="mb-3"&gt
+        &ltlabel for="email" class="form-label"&gtEmail address&lt/label&gt
+        &ltinput type="email" class="form-control" id="email" aria-describedby="emailHelp"&gt
+        &ltdiv id="emailHelp" class="form-text"&gtWe'll never share your email with anyone else.&lt/div&gt
+    &lt/div&gt
+    &ltdiv id="divID"&gt
+        &ltinput type="checkbox" class="box" name="test" value="1" /&gt Test 1&ltbr /&gt
+        &ltinput type="checkbox" class="box" name="test" value="2" /&gt Test 2&ltbr /&gt
+        &ltinput type="checkbox" class="box" name="test" value="3" /&gt Test 3&ltbr /&gt
+        &ltinput type="checkbox" class="box" name="test" value="4" /&gt Test 4&ltbr /&gt
+        &ltinput type="checkbox" class="box" name="test" value="5" /&gt Test 5&ltbr /&gt
+    &lt/div&gt
+    &ltlabel class="mt-3"&gtGender:&lt/label&gt
+    &ltdiv&gt
+        &ltinput type="radio" class="radioBtnClass" name="numbers" value="male" /&gtMale&ltbr /&gt
+        &ltinput type="radio" class="radioBtnClass" name="numbers" value="female" /&gtFemal&ltbr /&gt
+    &lt/div&gt
+    &ltdiv class="mt-3"&gt
+        &ltdiv class="mb-3"&gt
+            &ltlabel for="formFile" class="form-label"&gtfile input&lt/label&gt
+            &ltinput class="form-control" type="file" id="formFile"&gt
+        &lt/div&gt
+    &lt/div&gt
+
+    &ltdiv class="col-md-4"&gt
+        &ltlabel for="education" class="form-label"&gtEducation&lt/label&gt
+        &ltselect id="education" name="education" class="form-select" required&gt
+            &ltoption selected&gtChoose...&lt/option&gt
+            &ltoption value="BCA"&gtBCA&lt/option&gt
+            &ltoption value="bcom"&gtBCOM&lt/option&gt
+            &ltoption value="Mca"&gtMCA&lt/option&gt
+            &ltoption value="MBA"&gtMBA&lt/option&gt
+        &lt/select&gt
+    &lt/div&gt
+
+    &ltbutton type="submit" id="submit" class="mt-3 btn btn-primary"&gtSubmit&lt/button&gt
+&lt/form&gt</code>
+
+                        </pre>
+
+
+                        <b>insert.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code>&lt?php
+include "db.php";
+
+
+$name = $_POST['Name'];
+$email = $_POST['Email'];
+$value = $_POST['Value'];
+$radio = $_POST['Radio'];
+$edu = $_POST['Education'];
+
+$sql = "INSERT INTO `user` ( `name`, `email`, `radio`, `box`, `education`, `image`, `date_time`) VALUES ('$name', '$email', '$radio', '$value', '$edu', 'img', CURRENT_TIMESTAMP)";
+$result = mysqli_query($conn,$sql);
+
+if ($result) {
+    echo '1';
+
+}
+else {
+    echo '0';
+}
+
+?&gt</code>
+
+                        </pre>
+
+                        <b>jquery.js</b>
+                        <pre class="language-js line-numbers" style="height: 350px;">
+<code>// insert data 
+    $('#submit').on("click", function(e) {
+
+        // alert("Click")
+        e.preventDefault();
+        var name = $('#name').val();
+        var email = $('#email').val();
+        var box = $('.box').val();
+        var value = [];
+        var education = $('#education').val();
+
+        $('.box').each(function() {
+            if ($(this).is(':checked')) {
+                value.push($(this).val())
+            }
+        })
+        value = value.toString();
+
+        // console.log("Value is", value);
+
+        if ($("input[type='radio'].radioBtnClass").is(':checked')) {
+            var radioval = $("input[type='radio'].radioBtnClass:checked").val();
+            // alert(radioval);
+        }
+
+        var file = $('#file').val()
+
+
+
+        if (name == "" || email == "" || value == "" || radioval == "" || education ==
+            "Choose...") {
+            alert("All fills are required")
+        } else {
+            $.ajax({
+                url: "insert.php",
+                type: "POST",
+                data: {
+                    Name: name,
+                    Email: email,
+                    Value: value,
+                    Radio: radioval,
+                    Education: education
+                },
+                success: function(data) {
+                    if (data == 1) {
+                        $('form').trigger('reset')
+                        alert("Insert Success");
+                        lodedata();
+                    } else {
+                        alert("Insert Faild");
+                    }
+                }
+            })
+        }
+
+    })</code>
+
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        #2 Lode data/Listing
+                  </button>
+                    </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <!-- Some placeholder content for the second accordion panel. This panel is hidden by default. -->
+                        <b>index.php</b>
+                        <pre class="language-html line-numbers" style="height: 350px;">
+<code>&lttable class="table"&gt
+    &ltthead&gt
+        &lttr&gt
+            &ltth&gtId&lt/th&gt
+            &ltth&gtName&lt/th&gt
+            &ltth&gtEmail&lt/th&gt
+            &ltth&gtradio&lt/th&gt
+            &ltth&gtBox&lt/th&gt
+            &ltth&gtEducation &lt/th&gt
+            &ltth&gtAction&lt/th&gt
+        &lt/tr&gt
+    &lt/thead&gt
+    &lttbody id="tabledata"&gt
+
+    &lt/tbody&gt
+&lt/table&gt</code>
+</pre>
+
+                        <b>show-script.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code>&lt?php
+
+
+    include "db.php";
+    
+    
+    $sql = "SELECT * FROM `user`";
+    $result = mysqli_query($conn,$sql);
+    
+    $numrow = mysqli_num_rows($result);
+    
+    if ($numrow &gt 0) {
+        $id=0;
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $id + 1;
+            echo '&lttr&gt
+                    &lttd&gt'.$id.'&lt/td&gt
+                    &lttd&gt'.$row['name'].'&lt/td&gt
+                    &lttd&gt'.$row['email'].'&lt/td&gt
+                    &lttd&gt'.$row['radio'].'&lt/td&gt
+                    &lttd&gt'.$row['box'].'&lt/td&gt
+                    &lttd&gt'.$row['education'].'&lt/td&gt
+                    &lttd&gt&ltbutton type="button" data-eid="'.$row['id'].'" class="edit btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#edit"&gtEdit&lt/button&gt
+                    &ltbutton type="button" class="deletebtn btn btn-sm btn-primary" data-id="'.$row['id'].'"&gtDelete&lt/button&gt &lt/td&gt      
+                &lt/tr&gt';
+        }
+    }
+    else {
+        echo "Record not found";
+    }
+    
+    ?&gt</code>
+</pre>
+
+                        <b>jquery.js</b>
+                        <pre class="language-js line-numbers" style="height: 350px;">
+<code>// show data
+    function lodedata() {
+        $.ajax({
+            url: "lodedata.php",
+            type: "POST",
+            success: function(data) {
+                $('#tabledata').html(data)
+            }
+        })
+    }
+    lodedata();</code>
+</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        #3 Update data
+                  </button>
+                    </h2>
+                </div>
+                <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <!-- Some placeholder content for the second accordion panel. This panel is hidden by default. -->
+                        <b>update.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code>&lt?php
+
+    include "db.php";
+    
+    $userid = $_POST['id'];
+    $sql = "SELECT * FROM `user` WHERE id = '$userid'";
+    $result = mysqli_query($conn,$sql);
+    
+    $numrow = mysqli_num_rows($result);
+    if ($numrow&gt0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+    
+        $value = $row['box'];
+        $data = explode(",",$value);
+        echo '&ltdiv class="col-md-6"&gt
+                &ltdiv class="mb-3"&gt
+                        &ltlabel for="editname" class="form-label"&gtName&lt/label&gt
+                        &ltinput type="text" class="form-control" name="editname" value="'.$row['name'].'" id="editname"&gt
+                        &ltinput type="hidden" class="form-control" name="editid" value="'.$row['id'].'" id="editid"&gt
+                    &lt/div&gt
+                    &ltdiv class="mb-3"&gt
+                        &ltlabel for="editemail" class="form-label"&gtEmail address&lt/label&gt
+                        &ltinput type="email" class="form-control" value="'.$row['email'].'" id="editemail" aria-describedby="emailHelp"&gt
+                        &ltdiv id="emailHelp" class="form-text"&gtWe\'ll never share your email with anyone else.&lt/div&gt
+                    &lt/div&gt
+                &lt/div&gt
+                &ltdiv id="divID"&gt
+                    &ltinput type="checkbox" class="box" name="test" value="1"';?&gt &lt?php  if (in_array("1",$data)) {
+                        echo "checked";
+                    } ?&gt/&gt &lt?php echo 'Test 1&ltbr /&gt
+                    &ltinput type="checkbox" class="box" name="test" value="2"';?&gt &lt?php  if (in_array("2",$data)) {
+                        echo "checked";
+                    } ?&gt /&gt&lt?php echo ' Test 2&ltbr /&gt
+                    &ltinput type="checkbox" class="box" name="test" value="3"';?&gt &lt?php  if (in_array("3",$data)) {
+                        echo "checked";
+                    } ?&gt /&gt&lt?php echo ' Test 3&ltbr /&gt
+                    &ltinput type="checkbox" class="box" name="test" value="4" ';?&gt &lt?php  if (in_array("4",$data)) {
+                        echo "checked";
+                    } ?&gt /&gt&lt?php echo ' Test 4&ltbr /&gt
+                    &ltinput type="checkbox" class="box" name="test" value="5"';?&gt &lt?php  if (in_array("5",$data)) {
+                        echo "checked";
+                    } ?&gt /&gt&lt?php echo ' Test 5&ltbr /&gt
+                &lt/div&gt
+                &ltlabel class="mt-3"&gtGender:&lt/label&gt
+                &ltdiv&gt
+                    &ltinput type="radio" class="radioBtnClass" name="numbers" value="male" ';?&gt &lt?php  if ($row['radio'] == 'male') {
+                        echo "checked";
+                    } ?&gt /&gt&lt?php echo 'Male&ltbr /&gt
+                    &ltinput type="radio" class="radioBtnClass" name="numbers" value="female" ';?&gt &lt?php  if ($row['radio'] == 'female') {
+                        echo "checked";
+                    } ?&gt /&gt&lt?php echo 'Femal&ltbr /&gt
+                &lt/div&gt
+    
+                &ltdiv class="col-md-4"&gt
+                    &ltlabel for="education" class="form-label"&gtEducation&lt/label&gt
+                    &ltselect id="education" name="education" class="form-select" required&gt
+                        &ltoption selected&gt'.$row['education'].'&lt/option&gt
+                        &ltoption value="BCA"&gtBCA&lt/option&gt
+                        &ltoption value="bcom"&gtBCOM&lt/option&gt
+                        &ltoption value="Mca"&gtMCA&lt/option&gt
+                        &ltoption value="MBA"&gtMBA&lt/option&gt
+                    &lt/select&gt
+                &lt/div&gt
+                &ltbutton type="submit" id="edit-submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit"&gtSubmit&lt/button&gt';
+    }
+    }
+    else {
+        echo 0;
+    }
+    
+    ?&gt</code>
+</pre>
+
+                        <b>update-jquery.js</b>
+                        <pre class="language-js line-numbers" style="height: 350px;">
+<code> // lodedata for Upadate
+    $(document).on("click", ".edit", function(data) {
+        var userid = $(this).data("eid");
+
+        $.ajax({
+            url: "update.php",
+            type: "POST",
+            data: {
+                id: userid
+            },
+            success: function(data) {
+                $('#edit-form').html(data);
+            }
+        })
+    })
+
+    // update record 
+    $(document).on("click", "#edit-submit", function(e) {
+        e.preventDefault();
+        var userid = $('#editid').val();
+        var name = $('#editname').val();
+        var email = $('#editemail').val();
+        var box = $('.box').val();
+        var value = [];
+        var education = $('#education').val();
+
+        $('.box').each(function() {
+            if ($(this).is(':checked')) {
+                value.push($(this).val())
+            }
+        })
+        value = value.toString();
+        console.log(value);
+
+        if ($("input[type='radio'].radioBtnClass").is(':checked')) {
+            var radioval = $("input[type='radio'].radioBtnClass:checked").val();
+            // alert(radioval);
+        }
+        $.ajax({
+            url: "update_record.php",
+            type: "POST",
+            data: {
+                Id: userid,
+                Name: name,
+                Email: email,
+                Value: value,
+                Radio: radioval,
+                Education: education
+            },
+            success: function(data) {
+                if (data == 1) {
+                    lodedata();
+                } else {}
+            }
+        })
+    })</code>
+</pre>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        #4 Delete data
+                  </button>
+                    </h2>
+                </div>
+                <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <!-- Some placeholder content for the second accordion panel. This panel is hidden by default. -->
+                        <b>delete-script.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code>&lt?php
+    include "db.php";
+    $userid = $_POST['id'];
+    
+    $sql = "DELETE FROM `user` WHERE id='$userid'";
+    $result = mysqli_query($conn,$sql);
+    if ($result) {
+        echo 1;
+    }
+    else {
+        echo 0;
+    }
+    ?&gt</code>
+</pre>
+
+                        <b>jquery.js</b>
+                        <pre class="language-js line-numbers" style="height: 350px;">
+<code>// delete record
+    $(document).on("click", ".deletebtn", function() {
+        if (confirm("Do you really want to delete this record?")) {
+            var userid = $(this).data("id");
+            var element = $(this);
+            $.ajax({
+                url: "delete.php",
+                type: "POST",
+                data: {
+                    id: userid
+                },
+                success: function(data) {
+                    if (data == 1) {
+                        lodedata();
+                    }
+                }
+            })
+        }
+Five</code>
+</pre>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        #2 Show data
+                  </button>
+                    </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <b>index.php</b>
+                        <pre class="language-html line-numbers" style="height: 350px;">
+<code></code>
+</pre>
+
+                        <b>show-script.php</b>
+                        <pre class="language-php line-numbers" style="height: 350px;">
+<code></code>
+</pre>
+
+                        <b>jquery.js</b>
+                        <pre class="language-js line-numbers" style="height: 350px;">
+<code></code>
+</pre>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Start card -->
+            <!-- <div class="card">
+                <div class="card-header" id="headingThree">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                #2 Show data
+                              </button>
+                    </h2>
+                </div>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                        And lastly, the placeholder content for the third and final accordion panel. This panel is hidden by default.
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- End card -->
+
+
+        </div>
+    </div>
+    <!-- prism js -->
+    <script src="prism.js"></script>
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+</body>
+
+</html>
